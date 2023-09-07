@@ -1,4 +1,20 @@
+# 准备
+
+## 配置环境
+```bash
+    conda create -n kg2instruct python=3.8
+    pip install -r requirements.txt
+```
+
+## 数据
+你可以从[此处](https://dumps.wikimedia.org/wikidatawiki/entities/)下载latest-all.json.bz2(即所有Wikidata实体), 从[此处](https://dumps.wikimedia.org/zhwiki/latest/)下载zhwiki-latest-pages-articles.xml.bz2(即中文Wikipedia dumps)
+
+NER模型, 我们采取hanlp中的[hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH](https://file.hankcs.com/hanlp/mtl/close_tok_pos_ner_srl_dep_sdp_con_electra_base_20210111_124519.zip)（中文） 和 [hanlp.pretrained.mtl.UD_ONTONOTES_TOK_POS_LEM_FEA_NER_SRL_DEP_SDP_CON_XLMR_BASE](https://file.hankcs.com/hanlp/mtl/ud_ontonotes_tok_pos_lem_fea_ner_srl_dep_sdp_con_xlm_base_20220608_003435.zip)（英文）
+
+
 # 构建一些必要的映射
+
+
 
 a. 构造wikipedia title与wikidata id之间的映射 wiki.db  
 ```bash
@@ -148,4 +164,3 @@ python src/pipeline.py \
         --model model/close_tok_pos_ner_srl_dep_sdp_con_electra_base \
         --device 0
 ```
-Q 

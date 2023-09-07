@@ -4,8 +4,7 @@ import argparse
 import logging
 from sqlitedict import SqliteDict
 from tqdm import tqdm
-
-from kglm.util import LOG_FORMAT
+from src.util import LOG_FORMAT
 logger = logging.getLogger(__name__)
 
 

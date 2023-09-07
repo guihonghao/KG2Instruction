@@ -4,7 +4,7 @@ import argparse
 import logging
 from sqlitedict import SqliteDict
 
-from kglm.util import generate_from_json_bz2, load_allowed_entities, LOG_FORMAT
+from src.util import generate_from_json_bz2, load_allowed_entities, LOG_FORMAT
 from build_db.render import render_quantity_en, render_quantity_zh, render_time_en, render_time_zh
 logger = logging.getLogger(__name__)
 

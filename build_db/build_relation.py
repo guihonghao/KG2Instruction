@@ -4,7 +4,7 @@ import argparse
 import logging
 from sqlitedict import SqliteDict
 
-from kglm.util import generate_from_json_bz2, load_allowed_entities, LOG_FORMAT
+from src.util import generate_from_json_bz2, load_allowed_entities, LOG_FORMAT
 logger = logging.getLogger(__name__)
 
 BAD_DATATYPES = ["Commons media file", "None", "External identifier", "URL"]

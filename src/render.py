@@ -1,7 +1,5 @@
 from collections import namedtuple
 import re
-from pint import UnitRegistry
-ureg = UnitRegistry()
 
 
 # See https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Dates_and_numbers

@@ -4,10 +4,6 @@ Functions for rendering date and quantity literals.
 """
 from collections import namedtuple
 import re
-from sqlitedict import SqliteDict
-from pint import UnitRegistry
-from pint.errors import UndefinedUnitError
-ureg = UnitRegistry()
 
 
 # See https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Dates_and_numbers
@@ -191,15 +187,6 @@ def custom_strftime_zh(formats, date):
 def render_time_en(value):
     posix_string = value['time']
     precision = int(value['precision'])
-    '''
-    date = parse_iso8601_en(posix_string)
-    if precision == 11:  # Day level precision
-        return custom_strftime_en(DAY_FORMATS_en, date)
-    if precision == 10: # Month level prevision
-        return custom_strftime_en(MONTH_FORMATS_en, date)
-    elif precision < 10: # Year level precision or less
-        return custom_strftime_en(YEAR_FORMATS_en, date)
-    '''
     return ['time', posix_string, precision]   
 
 
@@ -207,15 +194,6 @@ def render_time_en(value):
 def render_time_zh(value):
     posix_string = value['time']
     precision = int(value['precision'])
-    '''
-    date = parse_iso8601_zh(posix_string)
-    if precision == 11:  # Day level precision
-        return custom_strftime_zh(DAY_FORMATS_zh, date)
-    if precision == 10: # Month level prevision
-        return custom_strftime_zh(MONTH_FORMATS_zh, date)
-    elif precision < 10: # Year level precision or less
-        return custom_strftime_zh(YEAR_FORMATS_zh, date)
-    '''
     return ['time', posix_string, precision]   
     
 
@@ -240,29 +218,6 @@ def render_quantity_zh(value):
     else:
         return ['quantity', 'None', str(amount)]
         
-    '''
-    if unit == '1':
-        return [str(amount)]
-    else:
-        if unit.startswith("http://www.wikidata.org/entity/Q"):
-            qid = unit.split("/")[-1]
-            labels = get_unit_label_from_uri(qid, alias_db)
-            if labels:
-                units = labels
-            else:
-                units = [unit]
-        else:
-            units = [unit]
-
-        out = []
-        for unit in units:
-            if amount.is_integer():
-                formatted_quantity = f"{format_number_with_commas(int(amount))}{unit}"
-            else:
-                formatted_quantity = f"{amount:.2f}{unit}"
-            out.append(formatted_quantity)
-        return out
-    '''
 
 
 def render_quantity_en(value):
@@ -273,29 +228,7 @@ def render_quantity_en(value):
         return ['quantity', qid, str(amount)]    
     else:
         return ['quantity', 'None', str(amount)]
-    '''
-    if unit == '1':
-        return [str(amount)]
-    else:
-        if unit.startswith("http://www.wikidata.org/entity/Q"):
-            qid = unit.split("/")[-1]
-            labels = get_unit_label_from_uri(qid, alias_db)
-            if labels:
-                units = labels
-            else:
-                units = [unit]
-        else:
-            units = [unit]
 
-        out = []
-        for unit in units:
-            if amount.is_integer():
-                formatted_quantity = f"{format_number_with_commas(int(amount))}{unit}"
-            else:
-                formatted_quantity = f"{amount:.2f} {unit}"
-            out.append(formatted_quantity)
-        return out
-    '''
 
 
 def process_literal_zh(value, alias_db_zh):
