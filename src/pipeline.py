@@ -17,7 +17,10 @@ def main(_):
     alias_db = SqliteDict(FLAGS.alias_db, flag='r')
     alias_rev_db = SqliteDict(FLAGS.alias_rev_db, flag="r")
     relation_db = SqliteDict(FLAGS.relation_db, flag='r')
-    relation_value_db = SqliteDict(FLAGS.relation_value_db, flag='r')
+    if FLAGS.add_relation_value:
+        relation_value_db = SqliteDict(FLAGS.relation_value_db, flag='r')
+    else:
+        relation_value_db = None
     HanLP = hanlp.load(FLAGS.model, devices=FLAGS.device)
          
     text_list = [FLAGS.input, ]
@@ -94,6 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default="model/close_tok_pos_ner_srl_dep_sdp_con_electra_base")
     parser.add_argument('--device', type=int, default=0)
     parser.add_argument('--chunk', type=int, default=5)
+    parser.add_argument('--add_relation_value', action='store_true')
     
     FLAGS, _ = parser.parse_known_args()
 

@@ -6,11 +6,17 @@
     pip install -r requirements.txt
 ```
 
+
+
 ## 数据
 你可以从[此处](https://dumps.wikimedia.org/wikidatawiki/entities/)下载latest-all.json.bz2(即所有Wikidata实体), 从[此处](https://dumps.wikimedia.org/zhwiki/latest/)下载zhwiki-latest-pages-articles.xml.bz2(即中文Wikipedia dumps)。你也可以从[ghh001/InstructIE-original-zh](https://huggingface.co/datasets/ghh001/InstructIE-original-zh)下载经过清洗操作后的中文wikipedia文章的html文件(对应经过`clean_html.py`后的文件)。
 
 
 NER模型, 我们采取hanlp中的[hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH](https://file.hankcs.com/hanlp/mtl/close_tok_pos_ner_srl_dep_sdp_con_electra_base_20210111_124519.zip)（中文） 和 [hanlp.pretrained.mtl.UD_ONTONOTES_TOK_POS_LEM_FEA_NER_SRL_DEP_SDP_CON_XLMR_BASE](https://file.hankcs.com/hanlp/mtl/ud_ontonotes_tok_pos_lem_fea_ner_srl_dep_sdp_con_xlm_base_20220608_003435.zip)（英文）
+
+
+构建好的中文映射(`wiki_zh.db`、`alias_zh.db`、`alias_rev_zh.db`、`label_zh.db`、`relation_zh.db`), 可从[百度云盘](https://pan.baidu.com/s/1hX5135_jHzUQHz_hz2R8WQ?pwd=mykq)下载, 提取码: mykq
+
 
 
 
@@ -50,7 +56,7 @@ c. 注意：维基数据转储不包括重定向。要添加它们，您需要�
 ```
 
 
-d. 构造所有wikidata id之间的关系 relation.db、以及时间、数值等关系
+d. 构造所有wikidata id之间的关系 relation.db
 ```bash
     python build_db/build_relation.py \
         /newdisk3/data/guihh/Corpus/latest-all.json.bz2 \
@@ -147,9 +153,9 @@ python build_db/build_relation_value.py \
         data/zh/rel/rel0.json \
         --language zh \
         --relation_db data/db/relation_zh.db \
-        --relation_value_db data/db/relation_value.db \
         --alias_db data/db/alias_zh.db
 ```
+
 
 
 # 对任意文本使用Wikidata进行KG2Instruction
@@ -162,8 +168,7 @@ python build_db/build_relation_value.py \
         --alias_db data/db/alias_zh.db \
         --alias_rev_db data/db/alias_rev_zh.db \
         --relation_db data/db/relation_zh.db \
-        --relation_value_db data/db/relation_value.db \
-        --enttypeid_mapper data/other/enttype/enttypeid_mapper_zh.json \
+        --relation_map_path data/other/relation_map.json \
         --model model/close_tok_pos_ner_srl_dep_sdp_con_electra_base \
         --device 0
 ```

@@ -76,10 +76,11 @@ limit = {
 
 
 class Annotator:
-    def __init__(self, alias_db, relation_db, relation_value_db, relation_map_path, language) -> None:
+    def __init__(self, alias_db, relation_db, relation_value_db, relation_map_path, language, add_relation_value=False) -> None:
         self._relation_db = relation_db
         self._relation_value_db = relation_value_db
         self._alas_db = alias_db
+        self._add_relation_value = add_relation_value
 
         relation_map = {}
         with open(relation_map_path, "r", encoding="utf-8") as f:
@@ -97,7 +98,6 @@ class Annotator:
             self._render_time = render_time_en
         self._render_quantity = render_quantity
 
-        self._relation = dict()  # 头实体id+尾实体id : 关系
         
 
     def get_reltext(self, relation):
@@ -135,29 +135,33 @@ class Annotator:
             for rel, it in relations:
                 if it[0] == 'time' and rel in limit and limit[rel][1] == 'time':
                     times = self._render_time(it[1], it[2])
-                    times = sorted(times, key=lambda x:len(x), reverse=True)
+                    times = sorted(times, key=lambda x:len(x), reverse=True)    # 按字符串长度排序, 从长到短匹配, 避免匹配到子串
                     for time in times:
                         if clean_space(time) in text:
-                            candidate_relations[rel].add((entity[0], time, 'time'))
+                            candidate_relations[rel].add((time, 'time'))   # 每种关系可能有多个值
                             break
                 elif it[0] == 'quantity' and rel in limit and limit[rel][1] == 'quantity':
                     quantities = self._render_quantity(it[1], it[2], self._alas_db)
                     quantities = sorted(quantities, key=lambda x:len(x), reverse=True)
                     for quantity in quantities:
                         if clean_space(quantity) in text:
-                            candidate_relations[rel].add((entity[0], quantity, 'quantity'))
+                            candidate_relations[rel].add((quantity, 'quantity'))
                             break
-
+            
             for rel, values in candidate_relations.items():
-                sorted_values = sorted(values, key=lambda x:len(x[1]), reverse=True)
-                relation = {"head":sorted_values[0][0], "relation":self.get_reltext(rel), "tail":sorted_values[0][1]}
+                if (entity[1], rel) in self._relation_value_unique:
+                    continue
+                sorted_values = sorted(values, key=lambda x:len(x[1]), reverse=True)   # 每种关系对应的值, 取最长的
+                relation = {"head":entity[0], "relation":self.get_reltext(rel), "tail":sorted_values[0][0]}
+                self._relation_value_unique.add((entity[1], rel))
                 relation_values.append(relation)
-                enityt_values.append([sorted_values[0][1], sorted_values[0][2]])
+                enityt_values.append(list(sorted_values[0]))
         return relation_values, enityt_values
 
                     
     def annotate(self, entities, text) -> Dict[str, Any]:
-        self._relation = dict()
+        self._relation = dict()    # 头实体id+尾实体id : 关系
+        self._relation_value_unique = set()  # 确保对于relation_value类型, (head id, rel id)只出现一次
 
         relations = []
         new_entities = entities.copy()
@@ -198,10 +202,12 @@ class Annotator:
                         continue                
                     relations.append({"head":head, "relation":rel_type, "tail":tail})
                     only_once.add((head, rel_type, tail))
-            relation_values, enityt_values = self.add_relation_value(entities[i], text)
-            if len(relation_values) > 0:
-                relations.extend(relation_values)
-                new_entities.extend(enityt_values)
+
+            if self._add_relation_value:
+                relation_values, enityt_values = self.add_relation_value(entities[i], text)
+                if len(relation_values) > 0:
+                    relations.extend(relation_values)
+                    new_entities.extend(enityt_values)
         
         return relations, new_entities
 
@@ -223,7 +229,10 @@ def loader(
 
 def worker(q: JoinableQueue, i: int, writer, print_lock: Lock, FLAGS: Tuple[Any]) -> None:
     relation_db = SqliteDict(FLAGS.relation_db, flag='r')
-    relation_value_db = SqliteDict(FLAGS.relation_value_db, flag='r')
+    if FLAGS.add_relation_value:
+        relation_value_db = SqliteDict(FLAGS.relation_value_db, flag='r')
+    else:
+        relation_value_db = None
     alias_db = SqliteDict(FLAGS.alias_db, flag='r')    
 
     annotator = Annotator(
@@ -231,7 +240,8 @@ def worker(q: JoinableQueue, i: int, writer, print_lock: Lock, FLAGS: Tuple[Any]
         relation_db, 
         relation_value_db, 
         FLAGS.relation_map_path, 
-        FLAGS.language
+        FLAGS.language,
+        FLAGS.add_relation_value
     )
 
     while True:
@@ -285,6 +295,7 @@ if __name__ == '__main__':
     parser.add_argument('--relation_value_db', type=str, default='data/db/relation_value.db')
     parser.add_argument('--alias_db', type=str, default='data/db/alias.db')
     parser.add_argument('--relation_map_path', type=str, default="data/other/relation_map.json")
+    parser.add_argument('--add_relation_value', action='store_true')
     FLAGS, _ = parser.parse_known_args()
 
     logging.basicConfig(level=logging.INFO, format='%(message)s')

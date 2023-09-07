@@ -99,7 +99,7 @@ TrainDataBaseOnWiki/train_data_all.txt
 /.vscode
 /taggingDemo
 /toolkit
-data/
+data/db/
 cate/
 ccks23/
 infer/
