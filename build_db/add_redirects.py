@@ -6,7 +6,7 @@ from xml.etree import ElementTree
 from sqlitedict import SqliteDict
 import bz2
 
-from kglm.util import LOG_FORMAT, format_wikilink
+from src.util import LOG_FORMAT, format_wikilink
 
 
 logger = logging.getLogger(__name__)

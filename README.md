@@ -172,3 +172,33 @@ python build_db/build_relation_value.py \
         --model model/close_tok_pos_ner_srl_dep_sdp_con_electra_base \
         --device 0
 ```
+
+
+
+# 感谢
+
+部分代码来自于 [kglm-data](https://github.com/rloganiv/kglm-data), 感谢！
+
+
+# 引用
+
+如果您使用了本项目代码或数据，烦请引用下列论文:
+```bibtex
+@article{DBLP:journals/corr/abs-2305-11527,
+  author       = {Honghao Gui and
+                  Jintian Zhang and
+                  Hongbin Ye and
+                  Ningyu Zhang},
+  title        = {InstructIE: {A} Chinese Instruction-based Information Extraction Dataset},
+  journal      = {CoRR},
+  volume       = {abs/2305.11527},
+  year         = {2023},
+  url          = {https://doi.org/10.48550/arXiv.2305.11527},
+  doi          = {10.48550/arXiv.2305.11527},
+  eprinttype    = {arXiv},
+  eprint       = {2305.11527},
+  timestamp    = {Thu, 25 May 2023 15:41:47 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2305-11527.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+```
