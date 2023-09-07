@@ -107,17 +107,13 @@ log/
 model/
 nltk/
 
-*.txt
 *.csv
 *.html
 *.db
 *.log
 
-*.json
-*.jsonl
 *.gz
 *.tar
 *.bz2
 *.pkl
 *.log
-*.bash

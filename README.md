@@ -7,9 +7,11 @@
 ```
 
 ## 数据
-你可以从[此处](https://dumps.wikimedia.org/wikidatawiki/entities/)下载latest-all.json.bz2(即所有Wikidata实体), 从[此处](https://dumps.wikimedia.org/zhwiki/latest/)下载zhwiki-latest-pages-articles.xml.bz2(即中文Wikipedia dumps)
+你可以从[此处](https://dumps.wikimedia.org/wikidatawiki/entities/)下载latest-all.json.bz2(即所有Wikidata实体), 从[此处](https://dumps.wikimedia.org/zhwiki/latest/)下载zhwiki-latest-pages-articles.xml.bz2(即中文Wikipedia dumps)。你也可以从[ghh001/InstructIE-original-zh](https://huggingface.co/datasets/ghh001/InstructIE-original-zh)下载经过清洗操作后的中文wikipedia文章的html文件(对应经过`clean_html.py`后的文件)。
+
 
 NER模型, 我们采取hanlp中的[hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH](https://file.hankcs.com/hanlp/mtl/close_tok_pos_ner_srl_dep_sdp_con_electra_base_20210111_124519.zip)（中文） 和 [hanlp.pretrained.mtl.UD_ONTONOTES_TOK_POS_LEM_FEA_NER_SRL_DEP_SDP_CON_XLMR_BASE](https://file.hankcs.com/hanlp/mtl/ud_ontonotes_tok_pos_lem_fea_ner_srl_dep_sdp_con_xlm_base_20220608_003435.zip)（英文）
+
 
 
 # 构建一些必要的映射
@@ -86,7 +88,7 @@ python build_db/build_relation_value.py \
 
 3. 按段落划分Wikipedia文章、得到初步实体id与中文标签
 ```bash
-    python kglm/process_html.py \
+    python src/process_html.py \
         data/zh/clean/clean0.json \
         data/zh/process/process0.json \
         --wiki_db data/db/wiki_zh.db \
@@ -111,7 +113,7 @@ python build_db/build_relation_value.py \
 
 5. 合并3、4中的实体
 ```bash
-    python kglm/merge_ner.py \
+    python src/merge_ner.py \
         data/zh/process/process0.json \
 	    data/zh/hanner/hanner0.json \
 	    data/zh/merge/merge1.json \
@@ -124,11 +126,12 @@ python build_db/build_relation_value.py \
 
 
 6. 消歧义
-```{bash}
-    python kglm/match_qid.py \
+```bash
+    python src/match_qid.py \
         data/zh/merge/merge0.json \
         data/zh/match/match0.json \
         -j 8 \
+        --language zh \
         --relation_db data/db/relation_zh.db \
         --alias_rev_db data/db/alias_rev_zh.db \
         --alias_db data/db/alias_zh.db \
@@ -139,7 +142,7 @@ python build_db/build_relation_value.py \
 
 7. 匹配关系
 ```bash
-    python kglm/find_rel.py \
+    python src/find_rel.py \
         data/zh/match/match0.json \
         data/zh/rel/rel0.json \
         --language zh \
@@ -152,7 +155,7 @@ python build_db/build_relation_value.py \
 # 对任意文本使用Wikidata进行KG2Instruction
 
 ```bash
-python src/pipeline.py \
+    python src/pipeline.py \
         "《三十而已》是一部由张晓波执导，江疏影、童瑶、毛晓彤等主演的都市情感剧，该剧于2020年7月17日在东方卫视首播，并在腾讯视频同步播出。" \
         --language zh \
         --label_db data/db/label_zh.db \
